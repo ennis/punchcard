@@ -4,3 +4,10 @@ version = "0.1.0"
 authors = ["Alexandre Bléron <alex.bleron@gmail.com>"]
 
 [dependencies]
+futures = "*"
+tokio-core = "*"
+serde = "*"
+serde_json = "*"
+serde_derive = "*"
+rand = "*"
+zmq = { default-features = false, git = "https://github.com/mcgoo/rust-zmq", branch = "vcpkg"  }

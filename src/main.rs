@@ -1,3 +1,20 @@
+#![feature(box_syntax)]
+
+extern crate zmq;
+extern crate futures;
+extern crate tokio_core;
+extern crate serde;
+extern crate serde_json;
+#[macro_use]
+extern crate serde_derive;
+extern crate rand;
+
+use std::io;
+use std::marker::Send;
+use std::net::SocketAddr;
+
+use futures::{future, Future};
+use tokio_core::reactor::Core;
 use std::collections::HashMap;
 use std::net;
 use std::cell::{RefCell, Cell, Ref};
@@ -234,43 +251,43 @@ impl <T: 'static> WritableValue<T> for Property<T> {
     }
 }
 
-impl <T: Add + Clone + 'static> Add for Property<T>
-    where <T as Add>::Output: Clone
+#[derive(Clone, Serialize, Deserialize)]
+struct Entity
 {
-    type Output = Property<<T as Add>::Output>;
-
-    fn add(self, rhs: Property<T>) -> Self::Output {
-        let p = Property::new(self.value() + rhs.value());
-        let cp = p.clone();
-        self.observe(move |it| {
-            cp.set_value(it.value() + rhs.value())
-        });
-        rhs.observe(move |it| {
-            cp.set_value(self.value() + it.value())
-        });
-        p
-    }
+    name: String,
+    id: i64
 }
 
 fn main()
 {
-    let p = Property::new(10i32);
-    p.observe_value(|it, new| {
-       println!("New value: {}", new);
-    });
-    p.set_value(12i32);
+    const ENDPOINT: &str = "tcp://127.0.0.1:1234";
+    let ctx = zmq::Context::new();
+    let mut socket = ctx.socket(zmq::REP).unwrap();
+    socket.bind(ENDPOINT).unwrap();
+    println!("Listening on {}", ENDPOINT);
 
-    let string_prop = Property::new("ddsfs");
-    string_prop.observe_value(|it, new| {
-        println!("New value: {}", new);
-    });
-    string_prop.set_value("fgdojgfd");
+    loop {
+        let msg = socket.recv_msg(0).expect("Failed to receive message");
 
-    let string_prop2 = Property::new("msglmkg");
-    let string_prop3 = Property::new("fsmdfdsm");
-    string_prop2.bind(&string_prop);
-    string_prop3.bind(&string_prop);
-    string_prop.set_value("fsmdfsmdlfksd");
-    println!("{}", string_prop2.value());
-    println!("{}", string_prop3.value());
+        if let Some(s) = msg.as_str() {
+            println!("Received message: {}", s);
+            if s.starts_with("entity:") {
+                // This is a query, reply with some json
+                let json = serde_json::to_string(&Entity { name: "test".to_owned(), id: rand::random() }).expect("Error serializing struct");
+                socket.send(&json, 0);
+            }
+            else {
+                // reply
+                socket.send("YES!", 0);
+            }
+
+        }
+        else {
+            eprintln!("Message is not valid UTF-8");
+        }
+    }
+
+    //socket.send_str("hello world!", 0).unwrap();
+
+
 }
