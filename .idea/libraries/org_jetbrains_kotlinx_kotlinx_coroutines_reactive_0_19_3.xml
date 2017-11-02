@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="org.jetbrains.kotlinx:kotlinx-coroutines-reactive:0.19.3" type="repository">
+    <properties maven-id="org.jetbrains.kotlinx:kotlinx-coroutines-reactive:0.19.3" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlinx/kotlinx-coroutines-reactive/0.19.3/kotlinx-coroutines-reactive-0.19.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib/1.1.51/kotlin-stdlib-1.1.51.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/annotations/13.0/annotations-13.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlinx/kotlinx-coroutines-core/0.19.3/kotlinx-coroutines-core-0.19.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/reactivestreams/reactive-streams/1.0.0/reactive-streams-1.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
