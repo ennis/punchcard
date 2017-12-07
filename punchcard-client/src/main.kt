@@ -46,11 +46,11 @@ class MainController: Controller() {
 
     inline fun <reified T: Any> watchCoroutine(id: String) = publish<T>(coroutineContext) {
         while (true) {
-            delay(1000)
+            delay(16)
             socket.send(id)
             val json = socket.recvStr() // this may block, but not the UI thread
             val v = mapper.readValue<T>(json)
-            println("Received value: $v")
+            //println("Received value: $v")
             send(v)
         }
     }
@@ -80,15 +80,19 @@ class MyView : View() {
 
     init {
         with(root) {
-            vbox {
-                textfield() {
-                    textProperty().bind(controller.remoteObservable<Entity>("entity:0").map { it.toString() })
-                }
-                textfield() {
-                    textProperty().bind(controller.remoteObservable<Entity>("entity:1").map { it.toString() })
-                }
-                textfield() {
-                    textProperty().bind(controller.remoteObservable<Entity>("entity:2").map { it.toString() })
+            scrollpane {
+                vbox {
+                    repeat(2) {
+                        textfield() {
+                            textProperty().bind(controller.remoteObservable<Entity>("entity:0").map { it.toString() })
+                        }
+                        textfield() {
+                            textProperty().bind(controller.remoteObservable<Entity>("entity:1").map { it.toString() })
+                        }
+                        textfield() {
+                            textProperty().bind(controller.remoteObservable<Entity>("entity:2").map { it.toString() })
+                        }
+                    }
                 }
             }
         }

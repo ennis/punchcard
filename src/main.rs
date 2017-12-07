@@ -258,6 +258,33 @@ struct Entity
     id: i64
 }
 
+fn parse_rpc_method(path: &str) -> Option<(&str,&str)> {
+    // skip leading '/'
+    if !path.starts_with('/') {
+        return None;
+    }
+    let inner_path = &path[1..];
+    path.split('/').next()
+}
+
+trait RpcInterface {
+    fn rpc(&self, id: &str, msg: &str) -> String;
+    fn rpc_mut(&mut self, id: &str, msg: &str) -> String;
+}
+
+impl<T> RpcInterface for Vec<T> {
+    fn rpc(&self, path: &str, msg: &str) -> String {
+        if let Some((method,params)) = parse_rpc_method(path) {
+
+        }
+        String::new()
+    }
+
+    fn rpc_mut(&mut self, id: &str, msg: &str) -> String {
+        String::new()
+    }
+}
+
 fn main()
 {
     const ENDPOINT: &str = "tcp://127.0.0.1:1234";
@@ -270,7 +297,7 @@ fn main()
         let msg = socket.recv_msg(0).expect("Failed to receive message");
 
         if let Some(s) = msg.as_str() {
-            println!("Received message: {}", s);
+            //println!("Received message: {}", s);
             if s.starts_with("entity:") {
                 // This is a query, reply with some json
                 let json = serde_json::to_string(&Entity { name: "test".to_owned(), id: rand::random() }).expect("Error serializing struct");
